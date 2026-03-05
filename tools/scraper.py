@@ -32,7 +32,12 @@ load_dotenv()
 
 # ── Paths ──────────────────────────────────────────────────────
 ROOT_DIR  = Path(__file__).parent.parent
-TMP_DIR   = ROOT_DIR / ".tmp"
+
+if os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"):
+    TMP_DIR = Path("/tmp/scraperrr")
+else:
+    TMP_DIR = ROOT_DIR / ".tmp"
+
 OUT_FILE  = TMP_DIR / "articles.json"
 LOG_FILE  = TMP_DIR / "scraper.log"
 

@@ -31,7 +31,13 @@ except ImportError:
 # ── Setup ──────────────────────────────────────────────────────
 load_dotenv()
 ROOT_DIR  = Path(__file__).parent.parent
-TMP_DIR   = ROOT_DIR / ".tmp"
+
+if os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"):
+    TMP_DIR = Path("/tmp/scraperrr")
+else:
+    TMP_DIR = ROOT_DIR / ".tmp"
+
+TMP_DIR.mkdir(parents=True, exist_ok=True)
 OUT_FILE  = TMP_DIR / "articles.json"
 
 app = Flask(
