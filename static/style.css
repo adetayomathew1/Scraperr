@@ -1070,10 +1070,18 @@ body {
 @media (max-width: 600px) {
     .header {
         top: 32px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
     }
 
     .brand-name {
-        font-size: 17px;
+        font-size: 16px;
     }
 
     .brand-tag {
@@ -1084,8 +1092,53 @@ body {
         display: none;
     }
 
-    .header-right {
-        gap: 10px;
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .tabs {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        /* for scrollbar */
+        justify-content: flex-start;
+    }
+
+    .tabs::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .tabs::-webkit-scrollbar-thumb {
+        background: var(--glass-border);
+        border-radius: 4px;
+    }
+
+    .main {
+        padding: 12px;
+    }
+
+    .nl-overlay {
+        padding: 16px;
+    }
+
+    .newsletter-section {
+        padding: 24px 20px;
+        width: 100%;
+    }
+
+    .newsletter-title {
+        font-size: 18px;
+    }
+
+    .newsletter-row {
+        flex-direction: column;
+    }
+
+    .newsletter-btn {
+        width: 100%;
+        justify-content: center;
     }
 
     .btn-refresh span:last-child {
