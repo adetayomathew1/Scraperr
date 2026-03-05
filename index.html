@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCRAPERRR — Iran/USA/Israel War Intelligence</title>
+  <meta name="description"
+    content="Real-time war news intelligence dashboard tracking the Iran, USA, and Israel conflict. Latest articles from Reuters, BBC, Al Jazeera, AP News, and The Guardian." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+
+  <!-- ═══ TICKER ═══════════════════════════════════════════════ -->
+  <div class="ticker-wrap" id="tickerWrap">
+    <div class="ticker-label">🔴 LIVE</div>
+    <div class="ticker-track" id="tickerTrack">
+      <span class="ticker-item">Loading latest intelligence…</span>
+    </div>
+  </div>
+
+  <!-- ═══ CASUALTY TRACKER ════════════════════════════════════ -->
+  <div class="casualty-wrap" id="casualtyWrap" style="display:none;">
+    <div class="cas-label">Death Recorded:</div>
+    <div class="cas-list" id="casList">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- ═══ HEADER ════════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-left">
+      <div class="brand">
+        <span class="brand-icon">⚡</span>
+        <span class="brand-name">SCRAPERRR</span>
+        <span class="brand-tag">WAR INTELLIGENCE</span>
+      </div>
+      <div class="conflict-label">Iran · USA · Israel Conflict Tracker</div>
+    </div>
+    <div class="header-right">
+      <div class="stats-bar" id="statsBar">
+        <div class="stat-item">
+          <span class="stat-value" id="statTotal">—</span>
+          <span class="stat-label">Articles</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value" id="statSources">—</span>
+          <span class="stat-label">Sources</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value" id="statSaved">—</span>
+          <span class="stat-label">Saved</span>
+        </div>
+      </div>
+      <div class="last-updated" id="lastUpdated">Fetching data…</div>
+      <button class="btn-refresh" id="btnRefresh" onclick="forceRefresh()">
+        <span class="refresh-icon">↻</span>
+        <span>Refresh</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ CONTROLS ══════════════════════════════════════════════ -->
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-ico">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search headlines, sources, tags…"
+        oninput="applyFilters()" />
+      <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tabAll" onclick="switchTab('all')">All Articles</button>
+      <button class="tab" id="tabSaved" onclick="switchTab('saved')">
+        🔖 Saved
+        <span class="tab-badge" id="savedBadge">0</span>
+      </button>
+    </div>
+
+    <div class="source-filters" id="sourceFilters">
+      <!-- injected by JS -->
+    </div>
+  </div>
+
+  <!-- ═══ MAIN ══════════════════════════════════════════════════ -->
+  <main class="main">
+    <!-- Skeleton loaders -->
+    <div class="skeleton-grid" id="skeletonGrid">
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skel-img"></div>
+        <div class="skel-meta"></div>
+        <div class="skel-title"></div>
+        <div class="skel-title short"></div>
+        <div class="skel-text"></div>
+        <div class="skel-text"></div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skel-img"></div>
+        <div class="skel-meta"></div>
+        <div class="skel-title"></div>
+        <div class="skel-title short"></div>
+        <div class="skel-text"></div>
+        <div class="skel-text"></div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skel-img"></div>
+        <div class="skel-meta"></div>
+        <div class="skel-title"></div>
+        <div class="skel-title short"></div>
+        <div class="skel-text"></div>
+        <div class="skel-text"></div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skel-img"></div>
+        <div class="skel-meta"></div>
+        <div class="skel-title"></div>
+        <div class="skel-title short"></div>
+        <div class="skel-text"></div>
+        <div class="skel-text"></div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skel-img"></div>
+        <div class="skel-meta"></div>
+        <div class="skel-title"></div>
+        <div class="skel-title short"></div>
+        <div class="skel-text"></div>
+        <div class="skel-text"></div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skel-img"></div>
+        <div class="skel-meta"></div>
+        <div class="skel-title"></div>
+        <div class="skel-title short"></div>
+        <div class="skel-text"></div>
+        <div class="skel-text"></div>
+      </div>
+    </div>
+
+    <!-- Article grid -->
+    <div class="article-grid" id="articleGrid" style="display:none;"></div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="empty-icon">📡</div>
+      <p>No articles found matching your criteria.</p>
+    </div>
+
+
+  </main>
+
+  <!-- ═══ NEWSLETTER MODAL ════════════════════════════════════ -->
+  <div class="nl-overlay" id="nlOverlay">
+    <div class="nl-backdrop" id="nlBackdrop"></div>
+    <div class="newsletter-section" id="newsletterSection">
+      <button class="nl-dismiss" id="nlDismiss" aria-label="Dismiss">✕</button>
+      <form id="newsletterForm" class="newsletter-form">
+        <h2 class="newsletter-title">Subscribe to War Intelligence Updates</h2>
+        <p class="newsletter-desc">Get the latest conflict reports and intelligence delivered to your inbox.</p>
+        <label class="newsletter-label" for="newsletterEmail">Email address</label>
+        <div class="newsletter-row">
+          <input class="newsletter-input" id="newsletterEmail" type="email" placeholder="you@example.com" required />
+          <button class="newsletter-btn" type="submit" id="newsletterBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            <span>Subscribe</span>
+          </button>
+        </div>
+        <div class="newsletter-error" id="newsletterError" style="display:none;"></div>
+      </form>
+      <div class="newsletter-success" id="newsletterSuccess" style="display:none;">
+        <h2>Thank you for subscribing! 🎉</h2>
+        <p>We've sent a confirmation email to your inbox.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- ═══ TOAST ═════════════════════════════════════════════════ -->
+  <div class="toast" id="toast"></div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Dashboard Logic -->
+  <script src="/static/app.js"></script>
+</body>
+
+</html>
